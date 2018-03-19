@@ -12,6 +12,27 @@ typedef struct {
 	bool isNegative;
 } Array;
 
+//Initialise un tableau contenant nbElement elements
+Array init(size_t nbElement){
+	Array a;
+	a.array = calloc(nbElement,sizeof(int));
+	a.size=nbElement;
+	return a;
+}
+
+Array decomposition(char* val){
+	size_t taille = strlen(val);
+
+  Array a = init(taille);
+
+	for(int i=0;i<taille;i++){
+		a.array[i]  = val[taille-i-1]-48;
+		printf("%ld ",a.array[i]);
+	}
+	printf("\n");
+  return a;
+}
+
 void initArray(Array *a, size_t initialSize) {
 	a->array = (int *)malloc(initialSize * sizeof(int));
 	a->used = 0;
@@ -36,6 +57,17 @@ void insertArray(Array *a, int element) {
 	a->array[a->used++] = element;
 }
 
+// Utilisé pour convertir les strings passées en arguments par
+// l'utilisateur en Array
+void initArrayInt(Array *a, char *str){
+	size_t strSize = strlen(str);
+	initArray(a, strSize);
+	int i;
+	for(i=0; i<strSize; i++){
+		insertArray(a, str[i] - '0');
+	}
+}
+
 void freeArray(Array *a) {
 	free(a->array);
 	a->array = NULL;
@@ -53,18 +85,6 @@ void printArray(Array a){
 	}
 	puts(">");
 }
-
-// Utilisé pour convertir les strings passées en arguments par
-// l'utilisateur en Array
-void initArrayInt(Array *a, char *str){
-	size_t strSize = strlen(str);
-	initArray(a, strSize);
-	int i;
-	for(i=0; i<strSize; i++){
-		insertArray(a, str[i] - '0');
-	}
-}
-
 
 Array copy(Array a) {
   Array copiedArray;
@@ -372,25 +392,3 @@ Array karatsuba(Array x, Array y)
 	return result;
 }
 */
-
-
-int main(int argc, char ** argv)
-{
-  char str1[50] = "-1";
-  char str2[50] = "-9";
-
-  Array a, b;
-  initArrayInt(&a, str1);
-  initArrayInt(&b, str2);
-
-  printf("a : "); printArray(a);
-  printf("b : "); printArray(b);
-
-	Array x = sumArrays(a,b);
-	printf("x : "); printArray(x);
-
-	/*
-	Array su = substr(a, 4, 0);
-	printArray(su);
-	*/
-}
