@@ -15,6 +15,7 @@ typedef struct {
 
 Array subArrays(Array a, Array b);
 Array sumArrays(Array a, Array b);
+int biggest(Array a, Array b);
 
 //Initialise un tableau contenant nbElement elements
 Array init(size_t nbElement){
@@ -136,33 +137,69 @@ Array sumArrays(Array a, Array b)
 {
 	Array result;
 
-	if(a.isNegative == true  && b.isNegative == false){
-		result = subArrays(a,b);
-		// à revoir ici
-		return result;
-	}
-	if(a.isNegative == false && b.isNegative == true){
-		return subArrays(b,a);
-	}
-
-	// AJUSTEMENT DE LA TAILLE DES TABLEAUX
+	//Ajustement de la taille des tableau a et b
 	if(a.size > b.size) b = ajustArraySize(a,b);
 	if(a.size < b.size) a = ajustArraySize(a,b);
+	//a.size==b.size
+	
+	//a<0 et b>=0
+	if(a.isNegative == true  && b.isNegative == false){
+		int big = biggest(a,b);
+		printf("Add big = %d\n",big);
+		
+		//a>b et donc resultat négatif
+		if(big==1){
+			Array tmp = copy(a);
+			tmp.isNegative=false;
+			result = subArrays(tmp,b);
+			//resultat négatif
+			result.isNegative=true;
+			freeArray(&tmp);
+			return result;
+		}
+		//b>a ==> (-a)+b == b-(-a) ==> b+a
+		//resultat positif
+		//(-a)+b == b-a
+		Array tmp = copy(a);
+		tmp.isNegative=false;
+		result = subArrays(b,tmp);
+		freeArray(&tmp);
+		return result;
+	}
+	//a>=0 et b<0
+	//a+(-b) == a-b
+	if(a.isNegative == false && b.isNegative == true){
+		Array tmp = copy(b);
+		tmp.isNegative==false;
+		return subArrays(a,tmp);
+	}
+	//a<0 et b<0
+	//(-a)+(-b) == -(a+b)
+	if(a.isNegative == true && b.isNegative == true){
+		Array tmp1 = copy(a);
+		tmp1.isNegative=false;
+		Array tmp2 = copy(b);
+		tmp2.isNegative=false;
+		result = sumArrays(tmp1,tmp2);
+		result.isNegative=true;
+		freeArray(&tmp1);
+		freeArray(&tmp2);
+		return result;
+	}
 
 	result = init(a.size+1);
-
+	
 	// CALCUL PAR ACCUMULATION
-	for(int i=result.size-1; i>=0; i--)
+	for(int i=result.size-1; i>0; i--)
 		result.array[i] = (a.array[i-1] + b.array[i-1]);
-
+	
 	// PROPAGATION DE LA RETENUE
-	for(int i = result.size; i>=0; i--) {
+	for(int i = result.size-1; i>=0; i--) {
 		if(result.array[i] > 9) {
 			result.array[i-1] += (result.array[i] / 10);
 			result.array[i] %= 10;
 		}
 	}
-
 
 
 
@@ -311,44 +348,70 @@ Array subArrays(Array a, Array b) { // a - b
 
 	Array result;
 
-	//if(a.isNegative == false && b.isNegative == false){
-		// AJUSTEMENT DE LA TAILLE DES TABLEAUX
-		if(a.size > b.size) b = ajustArraySize(a,b);
-		if(a.size < b.size) a = ajustArraySize(a,b);
+	// AJUSTEMENT DE LA TAILLE DES TABLEAUX
+	if(a.size > b.size) b = ajustArraySize(a,b);
+	if(a.size < b.size) a = ajustArraySize(a,b);
 
-		result = init(a.size); // ou b.size
+	result = init(a.size); // ou b.size
 
-		int big = biggest(a,b); // si a > b : 1   si a < b : -1 sinon 0
-
-		switch(big) {
-			case 1:
-				// a > b donc soustraction normale
-				for(int i=a.size-1; i>=0; i--) {
-						if(a.array[i] < b.array[i]) {
-							a.array[i] += 10;
-							b.array[i-1] += 1;
-						}
-						result.array[i] = a.array[i] - b.array[i];
-				}
-				result.isNegative = false;
-				break;
-
-			case -1:
-				// a < b
-				for(int i=b.size-1; i>=0; i--) {
-						if(a.array[i] > b.array[i]) {
-							b.array[i] += 10;
-							a.array[i-1] += 1;
-						}
-						result.array[i] = b.array[i] - a.array[i];
+	int big = biggest(a,b); // si a > b : 1   si a < b : -1 sinon 0
+	printf("valeur de big : %d\n",big);
+	//a-(-b) == a+b
+	if(a.isNegative==false && b.isNegative==true){
+		Array tmp = copy(b);
+		tmp.isNegative=false;
+		result=sumArrays(a,tmp);
+		freeArray(&tmp);
+		return result;
+	}
+	
+	//(-a)-b == -(a+b)
+	if(a.isNegative==true && b.isNegative==false){
+		Array tmp = copy(a);
+		tmp.isNegative=false;
+		result=sumArrays(tmp,b);
+		freeArray(&tmp);
+		result.isNegative=true;
+		return result;
+	}
+	
+	//(-a)-(-b) == (-a)+b
+	if(a.isNegative==true && b.isNegative==true){
+		Array tmp=copy(b);
+		tmp.isNegative=false;
+		result=sumArrays(a,tmp);
+		freeArray(&tmp);
+		return result;
+	}
+	
+	switch(big) {
+		case 1:
+			// a > b donc soustraction normale
+			for(int i=a.size-1; i>=0; i--) {
+					if(a.array[i] < b.array[i]) {
+						printf("a<b\n");
+						a.array[i] += 10;
+						b.array[i-1] += 1;
 					}
-					result.isNegative = true;
-					break;
+					result.array[i] = a.array[i] - b.array[i];
+			}
+			result.isNegative = false;
+			break;
 
-			case 0:
+		case -1:
+			// a < b
+			for(int i=b.size-1; i>=0; i--) {
+					if(a.array[i] > b.array[i]) {
+						b.array[i] += 10;
+						a.array[i-1] += 1;
+					}
+					result.array[i] = b.array[i] - a.array[i];
+				}
+				result.isNegative = true;
 				break;
-		}
-	//}
+		case 0:
+			break;
+	}
 
 	return result;
 }
@@ -431,11 +494,11 @@ int main(int argc, char ** argv)
 	char * s2 = "9";
 	//char * s3 = randomNumber(5); printf(":: %s\n", s3);
 
-	Array x = initArrayInt(s1); printArray(x);
-	Array y = initArrayInt(s2); printArray(y);
-	Array z = init(strlen(s1));
+	Array x = initArrayInt(argv[1]); printArray(x);
+	Array y = initArrayInt(argv[2]); printArray(y);
+	Array z;
 
-	z = sumArrays(x,y); printArray(z);
+	z = subArrays(x,y); printArray(z);
 
 	//printf("%d et %d \n", x.isNegative, y.isNegative );
 
