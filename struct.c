@@ -145,7 +145,6 @@ Array sumArrays(Array a, Array b)
 	//a<0 et b>=0
 	if(a.isNegative == true  && b.isNegative == false){
 		int big = biggest(a,b);
-		printf("Add big = %d\n",big);
 		
 		//a>b et donc resultat négatif
 		if(big==1){
@@ -355,7 +354,6 @@ Array subArrays(Array a, Array b) { // a - b
 	result = init(a.size); // ou b.size
 
 	int big = biggest(a,b); // si a > b : 1   si a < b : -1 sinon 0
-	printf("valeur de big : %d\n",big);
 	//a-(-b) == a+b
 	if(a.isNegative==false && b.isNegative==true){
 		Array tmp = copy(b);
@@ -420,18 +418,57 @@ Array subArrays(Array a, Array b) { // a - b
  * et finissant (length) caractères plus loin :
  * substr("bonjour", 2, 3) >> "njo"
  */
-Array substr(Array s, size_t pos, size_t length)
+Array substr(Array t, size_t depart, size_t arrivee)
 {
-	if(pos == s.size) return s;
-	if(pos >  length) exit(0);
-	if(length+pos > s.size) exit(0);
-
-	Array sub;
-	initArrayToZero(&sub, length);
-	for(size_t i=0; i<length; i++, pos++){
-		sub.array[i] = s.array[pos];
+	Array tab = init(arrivee-depart);
+	int j=0;
+	for (int i=depart;i<arrivee;i++){
+		tab.array[j] = t.array[i];
+		j++;
 	}
-	return sub;
+	tab.isNegative=t.isNegative;
+  return tab;
+}
+//rajouter adroite 0 à droite
+Array aggrandissement(Array a,size_t adroite){
+	Array result = init(a.size+adroite);
+	//simple copie du tableau a
+	for(int i=0;i<a.size;i++){
+		result.array[i]=a.array[i];
+	}
+	//result.size >= a.size ==> result.size = a.size + adroite
+	return result;
+}
+
+Array reduction(Array a){
+	if(a.size>1){
+		Array result;
+		int compteur=0;
+		for(int i=0;i<a.size;i++){
+			if(a.array[i]!=0) break;
+			else compteur++;
+		}
+		result=init(a.size-compteur);
+		int j=0;
+		for(int i=compteur;i<a.size;i++){
+			result.array[j]=a.array[i];
+			j++;
+		}
+		return result;
+	}
+	return a;
+}
+
+Array taillePaire(Array a){
+	//taille impaire
+	if(a.size%2==1){
+		Array result = init(a.size+1);
+		for(int i=1;i<a.size+1;i++){
+			result.array[i]=a.array[i-1];
+		}
+		return result;
+	}
+	return a;
 }
 
 /*
@@ -488,6 +525,78 @@ char * randomNumber(size_t size){
 }
 */
 
+Array karatsuba(Array a,Array b){
+	//Cas ou la taille de a et b = 1
+	Array result;
+	if(a.size==1 && b.size==1){
+		//a.size+b.size
+		result = init(2);
+		int val = a.array[0]*b.array[0];
+		if(val>9){
+			result.array[1]=val%10;
+			result.array[0]=val/10;
+		}
+		else{
+			result.array[1]=val;
+		}
+		// result = copy(a);
+		return result;
+	}
+	//dans le cas contraire
+	else{
+		// AJUSTEMENT DE LA TAILLE DES TABLEAUX
+		if(a.size > b.size) b = ajustArraySize(a,b);
+		if(a.size < b.size) a = ajustArraySize(a,b);
+		//a.size==b.size
+		
+		//fonction qui verifie si la taille est paire
+		//Si ce n'est pas le cas, elle augmente la taille de 1
+		Array ap = taillePaire(a);
+		Array bp = taillePaire(b);
+		
+		Array A = substr(a,0,a.size/2);
+		Array B = substr(a,a.size/2, a.size);
+		Array C = substr(b,0,b.size/2);
+		Array D = substr(b,b.size/2,b.size);
+		
+		freeArray(&ap); freeArray(&bp);
+		
+		//printArray(A); printArray(B); printArray(C); printArray(D);printf("\n");
+		
+		Array AC = karatsuba(A,C);
+		//printf("AC : "); printArray(AC);
+		Array BD = karatsuba(B,D);
+		//printf("BD : "); printArray(BD);
+		Array y = karatsuba(subArrays(A,B),subArrays(C,D));
+		Array Z = subArrays(sumArrays(AC,BD),y);
+		//printf("Z : "); printArray(Z);
+		
+		//Liberation de la mémoire
+		freeArray(&A);
+		freeArray(&B);
+		freeArray(&C);
+		freeArray(&D);
+		
+		Array z = aggrandissement(Z,a.size/2);
+		freeArray(&Z);
+		Array r1 = sumArrays(BD,z);
+		freeArray(&BD);
+		freeArray(&z);
+		
+		Array ac = aggrandissement(AC,a.size);
+		freeArray(&AC);
+		Array r2 = sumArrays(r1,ac);
+		freeArray(&r1);
+		freeArray(&ac);
+		
+		result = reduction(r2);
+		freeArray(&r2);
+		
+		return result;
+		
+	}
+}
+
 int main(int argc, char ** argv)
 {
 	char * s1 = "-300";
@@ -498,10 +607,10 @@ int main(int argc, char ** argv)
 	Array y = initArrayInt(argv[2]); printArray(y);
 	Array z;
 
-	z = subArrays(x,y); printArray(z);
+	//z = subArrays(x,y); printArray(z);
 
 	//printf("%d et %d \n", x.isNegative, y.isNegative );
 
 
-	//z = karatsuba(x,y); printArray(z);
+	z = karatsuba(x,y); printArray(z);
 }
