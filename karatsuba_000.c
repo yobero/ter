@@ -6,11 +6,39 @@
 
 typedef char* string;
 
-#define MAX(X,Y) ((X)>(Y)?(X):(Y))
+#define MAX(X,Y) ((X)>=(Y)?(X):(Y))
+#define MIN(X,Y) ((X)<=(Y)?(X):(Y))
 #define TRUE 1
 #define FALSE 0
 
+char *str_sub (const char *s, unsigned int start, unsigned int end)
+{
+   char *new_s = NULL;
 
+   if (s != NULL && start < end)
+   {
+/* (1)*/
+      new_s = malloc (sizeof (*new_s) * (end - start + 1));
+      if (new_s != NULL)
+      {
+         int i;
+
+/* (2) */
+         for (i = start; i < end; i++)
+         {
+/* (3) */
+            new_s[i-start] = s[i];
+         }
+         new_s[i-start] = '\0';
+      }
+      else
+      {
+         fprintf (stderr, "Memoire insuffisante\n");
+         exit (EXIT_FAILURE);
+      }
+   }
+   return new_s;
+}
 
 //test si un nombre est négatif ou non
 int isnegatif(const char* s)
@@ -75,19 +103,20 @@ char* decale(const char* c)
 				char v = (j>=0)?(c[j+i]):(0);
 				res[j] = v;
 			}
+			res[l-i] = '\0';
+			return res;
 		}
 
-	res[l-i] = '\0';	
-	if (res[l-i-1]!= '0'&& res[l-i-1] != '1' && res[l-i-1] != '2'&& res[l-i-1] != '3' && res[l-i-1] != '4'&& res[l-i-1] != '5' && res[l-i-1] != '6'&& res[l-i-1] != '7' && res[l-i-1] != '8'&& res[l-i-1] != '9')
-	{
-		res[l-i-1] = '\0';
-	}
 		
-		return res;
-		
+		if (res[l-i-1]!= '0'&& res[l-i-1] != '1' && res[l-i-1] != '2'&& res[l-i-1] != '3' && res[l-i-1] != '4'&& res[l-i-1] != '5' && res[l-i-1] != '6'&& res[l-i-1] != '7' && res[l-i-1] != '8'&& res[l-i-1] != '9')
+		{
+			res[l-i-1] = '\0';
+			return res;
+		}
+			
 	}
 	
-	return res;		
+			
 }
 
 //test si un nombre est égal à 1
@@ -277,8 +306,8 @@ char* additionner(const char* s1,const char* s2)
 	        char chiffre1 = (len1-i-1>=0)?(s1[len1-i-1]-'0'):(0);
 	        char chiffre2 = (len2-i-1>=0)?(s2[len2-i-1]-'0'):(0);
 	        char addition = chiffre1 + chiffre2 + retenue;
-	        retenue = addition/10;
-	        addition = addition%10;
+	        retenue = (addition>=10)?(1):(0);
+	        addition = (addition>=10)?(addition-10):(addition);
 	        res[reslen-i-1] = addition + '0';
 	    }
 	    res = decale(res);
@@ -291,23 +320,21 @@ char* additionner(const char* s1,const char* s2)
     	
     	char* ss2 = opposer(s2);
     	if(comparaison_nombre(s1,ss2)==2)
-    	{char addition;
+    	{
     		for(i=0;i<reslen;i++)
 		    {	char chiffre1 = (len1-i-1>=0)?(s1[len1-i-1]-'0'):(0);
 		        char chiffre2 = (len2-i-1>=0)?(ss2[len2-i-1]-'0'):(0);
 
 		        if (chiffre1<(chiffre2+retenue))
 		        {
-		        	 addition = 10 + chiffre1 - (chiffre2 + retenue);
+		        	 addition = (10 + chiffre1) - (chiffre2 + retenue);
 		        	 retenue = 1;
 		        }else{
 
 		        	 addition = chiffre1 - (chiffre2 + retenue);
 			        retenue = 0;
 		        }
-		        //printf("%d\n",addition);
-		        //retenue = addition/10;
-			    addition = addition%10;
+		        
 			    res[reslen-i-1] = addition + '0';
 		        
 		    }
@@ -316,21 +343,19 @@ char* additionner(const char* s1,const char* s2)
     	}
 
     	if(comparaison_nombre(s1,ss2)==1)
-    	{char addition;
+    	{
     		for(i=0;i<reslen;i++)
 		    {	char chiffre1 = (len1-i-1>=0)?(s1[len1-i-1]-'0'):(0);
 		        char chiffre2 = (len2-i-1>=0)?(ss2[len2-i-1]-'0'):(0);
 		        
 		        if (chiffre2<(chiffre1+retenue))
 		        {
-		        	addition = 10 + chiffre1 - (chiffre2 + retenue);
+		        	addition = (10 + chiffre1) - (chiffre2 + retenue);
 		        	retenue = 1;
 		        }else{
 		            addition = chiffre2 - (chiffre1 + retenue);
 		            retenue = 0;
 		        }
-			        //retenue = addition/10;
-			        addition = addition%10;
 			        res[reslen-i-1] = addition + '0';
 		  
 		    }
@@ -350,14 +375,13 @@ char* additionner(const char* s1,const char* s2)
 		        char chiffre2 = (len2-i-1>=0)?(s2[len2-i-1]-'0'):(0);
 		        if (chiffre1<(chiffre2+retenue))
 		        {
-		        	addition = 10 + chiffre1 - (chiffre2 + retenue);
+		        	addition = (10 + chiffre1) - (chiffre2 + retenue);
 		        	retenue = 1;
 		        }else{
 		            addition = chiffre1 - (chiffre2 + retenue);
 		            retenue = 0;
 		        }
-			        //retenue = addition/10;
-			        addition = addition%10;
+			        
 			        res[reslen-i-1] = addition + '0';
 		  
 		        
@@ -368,20 +392,18 @@ char* additionner(const char* s1,const char* s2)
     	}
 
     	if(comparaison_nombre(ss1,s2)==1){
-    		char addition;
+    		
     		for(i=0;i<reslen;i++)
 		    {	char chiffre1 = (len1-i-1>=0)?(ss1[len1-i-1]-'0'):(0);
 		        char chiffre2 = (len2-i-1>=0)?(s2[len2-i-1]-'0'):(0);
 		        if (chiffre2<(chiffre1+retenue))
 		        {
-		        	addition = 10 + chiffre2 - (chiffre1 + retenue);
+		        	addition = (10 + chiffre2) - (chiffre1 + retenue);
 		        	retenue = 1;
 		        }else{
 		            addition = chiffre2 - (chiffre1 + retenue);
 		            retenue = 0;
 		        }
-			        //retenue = addition/10;
-			        addition = addition%10;
 			        res[reslen-i-1] = addition + '0';
 		  
 		    }
@@ -398,18 +420,8 @@ char* additionner(const char* s1,const char* s2)
     {
     	char* ss1 = opposer(s1);
     	char* ss2 = opposer(s2);
-    	for(i=0;i<reslen;i++)
-	    {	char chiffre1 = (len1-i-1>=0)?(ss1[len1-i-1]-'0'):(0);
-	        char chiffre2 = (len2-i-1>=0)?(ss2[len2-i-1]-'0'):(0);
-	        
-	        char addition = chiffre1 + chiffre2 + retenue;
-	        retenue = addition/10;
-	        addition = addition%10;
-	        res[reslen-i-1] = addition + '0';
-	    }
-	    res[0]='-';
-	    res = decale(res);
-	    //if(res == NULL){res[0]='0';res[1]='\0';}
+    	
+	    res = decale(opposer(additionner(ss1,ss2)));
 	    return res;
     }
      
@@ -479,50 +491,17 @@ char* soustraire(const char* s1,const char* s2)
 }
 
 //partie gauche d'un nombre
-char* partie_gauche(const char* s1)
-{
-	char* s = decale(s1);
-	int d = isnegatif(s);
-	int len = (strlen(s));
-	int lenn = (len%2==0)?((len/2)+d):((len/2)+1+d);
-	char* ss1;
-	ss1 = malloc(lenn);
-	
-	for (int i = 0; i < lenn; i++)
-	{
-		 char value = (i>=0)?(s[i]):(0); 
-		 ss1[i] = value;
-	}
-	ss1[lenn] = '\0';
-	/*if (ss1[len-lenn-1]!= '0'&& ss1[len-lenn-1] != '1' && ss1[len-lenn-1] != '2'&& ss1[len-lenn-1] != '3' && ss1[len-lenn-1] != '4'&& ss1[len-lenn-1] != '5' && ss1[len-lenn-1] != '6'&& ss1[len-lenn-1] != '7' && ss1[len-lenn-1] != '8'&& ss1[len-lenn-1] != '9')
-	{
-		ss1[len-lenn-1] = '\0';
-	}*/
-	return ss1;
+char* partie_gauche(const char* s1, unsigned int p)
+{	
+	unsigned int f = strlen(s1);
+	str_sub(s1,0,f-p);
 }
 
 //patie droite d'un nombre(à faire)
-char* partie_droite(const char* s1)
+char* partie_droite(const char* s1,int p)
 {	
-	char* s = decale(s1);
-	int d = isnegatif(s);
-	int len = (strlen(s));
-	int lenn = (strlen(partie_gauche(s)));
-	int lle = len-lenn;
-	int lim = len%2;
-	char* ss1;
-	ss1 = malloc(lle);
-	for (int i = 0; i < lle; i++)
-	{
-		 char value = (i>=0)?(s[lenn+i]):(0); 
-		 ss1[i] = value;
-	}
-	/*ss1[len-lenn] = '\0';
-	if (ss1[len-lenn-1]!= '0'&& ss1[len-lenn-1] != '1' && ss1[len-lenn-1] != '2'&& ss1[len-lenn-1] != '3' && ss1[len-lenn-1] != '4'&& ss1[len-lenn-1] != '5' && ss1[len-lenn-1] != '6'&& ss1[len-lenn-1] != '7' && ss1[len-lenn-1] != '8'&& ss1[len-lenn-1] != '9')
-	{
-		ss1[len-lenn-1] = '\0';
-	}*/
-	return ss1;
+	unsigned int f = strlen(s1);
+	str_sub(s1,f-p,f);
 }
 
 int ispuissance10(const char* s)
@@ -673,14 +652,15 @@ char* karatsuba(const char* p1 , const char* p2)
 
 	int lc1 = (isnegatif(c1)==TRUE)?(strlen(c1)-1):(strlen(c1));
 	int lc2 = (isnegatif(c2)==TRUE)?(strlen(c2)-1):(strlen(c2));
-	int m = MAX(lc1,lc2);
-	
+	int m1 = MAX(lc1,lc2);
+	int m2 = MIN(lc1,lc2);
+	int m = m2/2;
 	int z1 = compterZero(c1);
 	int z2 = compterZero(c2);
 
 	//lorsqu'au moins un des nombres est une puissance de 10
 	if (ispuissance10(c1)==TRUE || ispuissance10(c2)==TRUE)
-	{
+	{	
 		return multiplier(c1,c2);
 	}
 	
@@ -732,8 +712,16 @@ char* karatsuba(const char* p1 , const char* p2)
 		return multiplier(c1,c2);
 	}
 
+	if (lc1%2==1 && lc2%2==1)
+	{
+		m = (m2)/2 + m%2;
+	
+	}else{
+		m = m2/2;
+	}
+
 	//lorsque les nombres sont des unités
-	if((isnegatif(c1)==TRUE && isnegatif(c2)==TRUE && m<=2)||(m<=1)|| (isnegatif(c1)==FALSE && isnegatif(c2)==TRUE && lc2<=2 && lc1<=1)||(isnegatif(c1)==TRUE && isnegatif(c2)==FALSE && lc1<=2 && lc2<=1))
+	if((isnegatif(c1)==TRUE && isnegatif(c2)==TRUE && m2<=2)||(m2<=1)|| (isnegatif(c1)==FALSE && isnegatif(c2)==TRUE && lc2<=2 && lc1<=1)||(isnegatif(c1)==TRUE && isnegatif(c2)==FALSE && lc1<=2 && lc2<=1))
 	{
 		result = multiplier(c1,c2);
 		result = decale(result);
@@ -744,27 +732,21 @@ char* karatsuba(const char* p1 , const char* p2)
 	{
 		if (lc1<=2)
 		{
-			int k = 0;
-			char* t;t[0] = k+'0';t[1]='\0';
-			la = t;
-			ra = c1;
+			return multiplier(c1,c2);
 		}else{
-			la = partie_gauche(c1);
-			ra = partie_droite(c1);
+			la = partie_gauche(c1,m);
+			ra = partie_droite(c1,m);
 		}
 		
 	 }
 	 if (isnegatif(c2)==TRUE)
 	{
 		if (lc2<=2)
-		{
-			int k = 0;
-			char* t;t[0] = k+'0';t[1]='\0';
-			lb = t;
-			rb = c2;
+		{	
+			return multiplier(c1,c2);
 		}else{
-			lb = partie_gauche(c2);
-			rb = partie_droite(c2);
+			lb = partie_gauche(c2,m);
+			rb = partie_droite(c2,m);
 		}
 		
 	 }
@@ -773,13 +755,10 @@ char* karatsuba(const char* p1 , const char* p2)
 	{
 		if (lc1<=1)
 		{
-			int k = 0;
-			char* t;t[0] = k+'0';t[1]='\0';
-			la = t;
-			ra = c1;
+			return multiplier(c1,c2);
 		}else{
-			la = partie_gauche(c1);
-			ra = partie_droite(c1);
+			la = partie_gauche(c1,m);
+			ra = partie_droite(c1,m);
 		}
 		
 	 }
@@ -787,13 +766,10 @@ char* karatsuba(const char* p1 , const char* p2)
 	{
 		if (lc2<=1)
 		{
-			int k = 0;
-			char* t;t[0] = k+'0';t[1]='\0';
-			lb = t;
-			rb = c2;
+			return multiplier(c1,c2);	
 		}else{
-			lb = partie_gauche(c2);
-			rb = partie_droite(c2);
+			lb = partie_gauche(c2,m);
+			rb = partie_droite(c2,m);
 		}
 		
 	 }
@@ -802,15 +778,14 @@ char* karatsuba(const char* p1 , const char* p2)
 		printf("lb= %s\n",lb);
 		printf("rb = %s\n",rb);
 
-
 	 
 	a0 = karatsuba(la,lb);
 	a1 = karatsuba(soustraire(la,ra),soustraire(lb,rb));
 	a2 = karatsuba(ra,rb);
-	x = fois_10_puissance(a0,m);
+	/*x = fois_10_puissance(a0,2*m);
 	y = additionner(a0,a2);
 	z = soustraire(y,a1);
-	w = fois_10_puissance(z,m/2);
+	w = fois_10_puissance(z,m);
 	v = additionner(x,w);
 	q = additionner(v,a2);
 
@@ -822,23 +797,25 @@ char* karatsuba(const char* p1 , const char* p2)
 	printf("z = %s\n",z );
 	printf("v = %s\n",v);
 	printf("w = %s\n",w );
-	printf("q = %s\n",q );
-	return q;
+	printf("q = %s\n",q );*/
+	return additionner(additionner(fois_10_puissance(a0,2*m),fois_10_puissance(soustraire(additionner(a0,a2),a1),m)),a2);
+
 }
 
-int main(int argc, string* argv){
+int main(int argc, char** argv){
 	clock_t t1, t2;	
     t1 = clock();
 	if(argc>2){
-		
+		int i = 0;
 		char* val1 = decale(argv[1]);
 		char* val2 = decale(argv[2]);
 		char* n1 = enleverZeroArriere(val1);
 		char* n2 = enleverZeroArriere(val2);
 		int k1 = compterZero(val1);
 		int k2 = compterZero(val2);
-		printf("%d\n",k1 );
-		printf("%d\n",k2 );
+		int g1 = MIN(strlen(val1),strlen(val2))/2;
+		//printf("%d\n",k1 );
+		//printf("%d\n",k2 );
 		//printf("%d\n",compterZero(val1) );
 		//printf("%d\n",isnegatif(val1) );
 		//printf("%s\n", decale(opposer(opposer(val1))));
@@ -847,15 +824,22 @@ int main(int argc, string* argv){
 		//printf("%s\n",enleverZeroArriere(val2) );
 		//printf("%d\n", ismoinsUn(val1));
 		//printf("%d\n",ispuissance10(val2) );
-		//printf("(%s) + (%s) = %s\n",val1, val2, additionner(val1,val2));
+		/*n1 = decale(val1);
+		printf("%s\n",n1 );
+		while(i <123455){
+			//n1 = additionner(val1,n2);
+			n1 = additionner(n1,val1);
+			i++;
+		}
+		printf("(%s) * (%s) = %s\n",val1, val2,n1 );*/
 		//printf("%d\n",comparaison_nombre(val1,val2));
 		//printf("(%s) - (%s) = %s\n",val1, val2, soustraire(val1,val2));
 		//printf("%d\n",valeurde(val1) );
-		//printf("la = %s\n",partie_gauche(val1) );
-		//printf("ra = %s\n",partie_droite(val1) );
-		//printf("lb = %s\n",partie_gauche(val2) );
-		//printf("rb = %s\n",partie_droite(val2) );
-		//printf("%s\n",fois_10_puissance(val2,3) );
+		//printf("la = %s\n",partie_gauche(nn,g1));
+		//printf("ra = %s\n",partie_droite(val1,g1) );
+		//printf("lb = %s\n",partie_gauche(val2,g1) );
+		//printf("rb = %s\n",partie_droite(val2,g1) );
+		//printf("%s\n",fois_10_puissance(val2,3) );*/
 		//printf("(%s) * (%s) = %s\n",val1, val2,multiplier(val1,val2) );
 
 		printf("(%s) * (%s) = %s\n",val1, val2, fois_10_puissance(karatsuba(n1,n2),k1+k2));
