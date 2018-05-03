@@ -24,13 +24,17 @@ Array reduction(Array a){
 	if(a.size>1){
 		Array result;
 		int compteur=0;
+		//on compte le nombre de zéro inutile avant le premier chiffre non nul. Par exemple pour un nombre 000000456 on a 6 zéro qui doivent être enlever 
 		for(int i=0;i<a.size;i++){
-			if(a.array[i]!=0) break;
+			if(a.array[i]!=0) break;//sortie de la boucle lorsque a.array[i]!=0
 			else compteur++;
 		}
+		//ici si le compteur est égale à la taille du nombre en entrée, cela veut dire que l'utilisateur n'a entré que des zéros. Par exemple: 000000000 ne sera que 0 après la réduction
 		if(compteur==a.size){ Array zero = init(1);return zero; }
+		//initialisation de l'array après réduction
 		result=init(a.size-compteur);
 		int j=0;
+		//ici on recopie par exepmle 456 de l'exemple 000000456 dans un nouvel array pour avoir la taille réelle du nombre exacte
 		for(int i=compteur;i<a.size;i++){
 			result.array[j]=a.array[i];
 			j++;
