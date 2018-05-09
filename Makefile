@@ -11,7 +11,13 @@ compile : main.c karatsuba.c
 	gcc -Wall main.c -o multi -lm
 	
 run : compile
-	./multi 12 12
+	./multi 12 12 0
+	
+naive : compile
+	./multi 12 12 1
+	
+kara: compile
+	./multi 12 12 2
 	
 clean :
 	rm ./multi

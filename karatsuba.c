@@ -284,7 +284,7 @@ Array karatsuba(Array a1,Array b1){
 	//Cas ou la taille de a ou b = 1
 	Array result = init(a1.size+b1.size);
 	
-	if(a1.size==1 || b1.size==1){
+	if(a1.size==1 && b1.size==1){
 		if (a1.size==1)
 		{
 			int val = a1.array[0];
@@ -314,19 +314,20 @@ Array karatsuba(Array a1,Array b1){
 
 	//
 	//dans le cas contraire
-	if(a1.size!=1 && b1.size!=1){
+	if(a1.size>1 && b1.size>1){
 		// AJUSTEMENT DE LA TAIL123456789123456789123LE DES TABLEAUX
 			//Tester la paritée de la taille des nombres
-		 Array b = reduction(a1);
-		 Array a = reduction(b1);
+		 //Array a = reduction(a1);
+		 //Array b = reduction(b1);
 		//Array a =  ajustArraySize(a1,b1);
 		//Array b =  ajustArraySize(b1,a1);
-		 size_t s = (a.size%2==0)?(a.size/2):((a.size/2)+(a.size%2));
+		//printf("a1.size = %d b1.size = %d ",a.size,b.size);
+		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
 
-		Array A = substrl(a);
-		Array B = substrr(a);
-		Array C = substrl(b);
-		Array D = substrr(b);
+		Array A = substrl(a1);
+		Array B = substrr(a1);
+		Array C = substrl(b1);
+		Array D = substrr(b1);
 		
 		Array AC = karatsuba(A,C);
 		Array P = karatsuba(subArrays(A,B),subArrays(C,D));
@@ -352,7 +353,7 @@ Array karatsuba(Array a1,Array b1){
 		freeArray(&r2);
 		freeArray(&z);
 		freeArray(&r3);
+		return result;
 		
 	}
-	return result;
 }
