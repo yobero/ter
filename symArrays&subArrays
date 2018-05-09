@@ -1,0 +1,114 @@
+Array sumArrays(Array a, Array b){
+	Array a1 = ajustArraySize(a,b);
+	Array b1 = ajustArraySize(b,a);
+	Array result = init(a1.size+1);
+
+	if (a.isNegative==false && b.isNegative==false)
+	{
+		for (int i = 0; i < a1.size; ++i)
+		{
+			int d = result.array[a1.size-i]+a1.array[a1.size-i-1]+b1.array[a1.size-i-1];
+			if(d > 9) {
+			result.array[a.size-i] = d-10;
+			result.array[a.size-i-1] += d/10;
+			}else{
+				result.array[a1.size-i] = d;
+			}
+
+		}
+	result = reduction(result);
+	return result;
+	}
+
+	if (a.isNegative==true && b.isNegative==false)
+	{
+		if (whoIsTheBiggest(a1,b1)==1)
+		{
+			for(int i=a1.size-1; i>=0; i--) {
+					if(a1.array[i] < b1.array[i]) {
+						a1.array[i] += 10;
+						b1.array[i-1] += 1;
+					}
+					result.array[i+1] = a1.array[i] - b1.array[i];
+			}
+			result.isNegative = true;
+		}
+
+		if (whoIsTheBiggest(a1,b1)==-1)
+		{
+			for(int i=a1.size-1; i>=0; i--) {
+					if(b1.array[i] < a1.array[i]) {
+						b1.array[i] += 10;
+						a1.array[i-1] += 1;
+					}
+					result.array[i+1] = b1.array[i] - a1.array[i];
+			}
+			result.isNegative = false;
+		}
+		if (whoIsTheBiggest(a1,b1)==0)
+		{
+			result = init(1);
+			result.isNegative = false;
+		}
+		
+		for(int i = result.size-1; i>0; i--) {
+		if(result.array[i] > 9) {
+			result.array[i-1] += (result.array[i] / 10);
+			result.array[i] %= 10;
+		}
+		}
+		result = reduction(result);
+		return result;
+		
+	}
+
+	if (a.isNegative==false && b.isNegative==true){
+		if (whoIsTheBiggest(a1,opposer(b1))==1)
+		{
+			for(int i=a1.size-1; i>=0; i--) {
+					if(a1.array[i] < b1.array[i]) {
+						a1.array[i] += 10;
+						b1.array[i-1] += 1;
+					}
+					result.array[i+1] = a1.array[i] - b1.array[i];
+			}
+			result.isNegative = false;
+		}
+
+		if (whoIsTheBiggest(a1,opposer(b1))==-1)
+		{
+			for(int i=a1.size-1; i>=0; i--) {
+					if(b1.array[i] < a1.array[i]) {
+						b1.array[i] += 10;
+						a1.array[i-1] += 1;
+					}
+					result.array[i+1] = b1.array[i] - a1.array[i];
+			}
+			result.isNegative = true;
+		}
+		if (whoIsTheBiggest(a1,b1)==0)
+		{
+			result = init(1);
+			result.isNegative = false;
+		}
+		
+		for(int i = result.size-1; i>0; i--) {
+		if(result.array[i] > 9) {
+			result.array[i-1] += (result.array[i] / 10);
+			result.array[i] %= 10;
+		}
+		}
+		result = reduction(result);
+		return result;
+	}
+
+	if (a.isNegative==true && b.isNegative==true){
+		return opposer(sumArrays(opposer(a),opposer(b)));
+	}
+
+}
+
+Array subArrays(Array a, Array b){
+		
+		return sumArrays(a,opposer(b));
+}
