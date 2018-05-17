@@ -11,13 +11,18 @@ compile : main.c karatsuba.c
 	gcc -Wall main.c -o multi -lm
 	
 run : compile
-	./multi 12 12 0
+	./multi 692 217 0
 	
 naive : compile
 	./multi 12 12 1
 	
 kara: compile
-	./multi 12 12 2
+	./multi 692 217 2
+	
+plot: compile
+	./multi 0 0 3 > result
+	Rscript script.R
+	eog plot.jpg
 	
 clean :
 	rm ./multi

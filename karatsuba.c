@@ -284,7 +284,7 @@ Array karatsuba(Array a1,Array b1){
 	//Cas ou la taille de a ou b = 1
 	Array result = init(a1.size+b1.size);
 	
-	if(a1.size==1 && b1.size==1){
+	if(a1.size==1 || b1.size==1){
 		if (a1.size==1)
 		{
 			int val = a1.array[0];
@@ -325,13 +325,26 @@ Array karatsuba(Array a1,Array b1){
 		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
 
 		Array A = substrl(a1);
+		//printf("A : ");printArray(A);
 		Array B = substrr(a1);
+		//printf("B : ");printArray(B);
 		Array C = substrl(b1);
+		//printf("C : ");printArray(C);
 		Array D = substrr(b1);
+		//printf("D : ");printArray(D);
 		
 		Array AC = karatsuba(A,C);
-		Array P = karatsuba(subArrays(A,B),subArrays(C,D));
+		//printf("AC : ");printArray(AC);
+		Array q = subArrays(A,B);
+		Array w = subArrays(C,D);
+		//printf("a-b : ");printArray(q);
+		//printf("c-d : ");printArray(w);
+		Array P = karatsuba(q,w);
+		freeArray(&q);
+		freeArray(&w);
+		//printf("P : ");printArray(P);
 		Array BD = karatsuba(B,D);
+		//printf("BD : ");printArray(BD);
 	
 
 		Array ac = aggrandissement(AC,2*s);

@@ -1,4 +1,5 @@
 #include <time.h>
+#include <gmp.h>
 
 #include "karatsuba.c"
 #include "naive.c"
@@ -49,6 +50,45 @@ int main(int argc, char ** argv)
 	
 			Array z = karatsuba(x,y); printArray(z);
 			break;}
+			case 3 :{
+				//i montre le nombre de chiffre
+				int val;
+				for(int i=1;i<300;i+=1){
+					char* s1 = calloc(i,sizeof(int));
+					char* s2 = calloc(i,sizeof(int));
+					//creation aleatoire d'un nombre de i chiffre
+					for(int k=0;k<i;k++){
+						val=rand()%10;
+						s1[k]=val+'0';
+						val=rand()%10;
+						s2[k]=val+'0';
+					}
+					//algo naif
+					size_t sizeRes = strlen(s1) + strlen(s2);
+					int * res = calloc(sizeRes + 1, sizeof(int)); //calloc <=> malloc + initialisation du tableau à 0
+					debut = clock();
+					naiveMultiply(s1, s2, res);
+					double naive = ((double)clock()-debut)/CLOCKS_PER_SEC;
+
+					Array x = initArrayInt(s1);
+					Array y = initArrayInt(s2);
+					debut = clock();
+					Array z = karatsuba(x,y);
+					double karat = ((double)clock()-debut)/CLOCKS_PER_SEC;
+
+					printf("%d %f %f\n",i,naive,karat);
+	
+					freeArray(&x);
+					freeArray(&y);
+					freeArray(&z);
+					
+					free(s1);
+					free(s2);
+					s1=NULL;
+					s2=NULL;
+				}
+				break;
+			}
 				
 		}
 	
