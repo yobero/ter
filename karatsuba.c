@@ -326,6 +326,8 @@ Array karatsuba(Array a1,Array b1){
 		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
 		bool resPos=true;
 		
+		//Si un des tableaux est négatif alors le resultat est forcement négatif
+		//la variable resPos indique si le resultat est négatif (false) ou positif (true)
 		if((a1.isNegative==true && b1.isNegative==false) ||
 		   (a1.isNegative==false && b1.isNegative==true)){
 				resPos = false;
