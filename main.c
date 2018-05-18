@@ -53,7 +53,7 @@ int main(int argc, char ** argv)
 			case 3 :{
 				//i montre le nombre de chiffre
 				int val;
-				for(int i=1;i<300;i+=1){
+				for(int i=1;i<100000;i+=1){
 					char* s1 = calloc(i,sizeof(int));
 					char* s2 = calloc(i,sizeof(int));
 					//creation aleatoire d'un nombre de i chiffre
@@ -73,14 +73,14 @@ int main(int argc, char ** argv)
 					Array x = initArrayInt(s1);
 					Array y = initArrayInt(s2);
 					debut = clock();
-					Array z = karatsuba(x,y);
+					//Array z = karatsuba(x,y);
 					double karat = ((double)clock()-debut)/CLOCKS_PER_SEC;
 
 					printf("%d %f %f\n",i,naive,karat);
 	
 					freeArray(&x);
 					freeArray(&y);
-					freeArray(&z);
+					//freeArray(&z);
 					
 					free(s1);
 					free(s2);

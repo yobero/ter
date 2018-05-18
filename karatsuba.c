@@ -136,6 +136,7 @@ Array ajustArraySize(Array a1, Array b1) {
 Array aggrandissement(Array a,size_t adroite){
 	Array result = init(a.size+adroite);
 	//simple copie du tableau a
+	//result.isNegative=a.isNegative;
 	for(int i=0;i<a.size;i++){
 		result.array[i]=a.array[i];
 	}
@@ -323,6 +324,14 @@ Array karatsuba(Array a1,Array b1){
 		//Array b =  ajustArraySize(b1,a1);
 		//printf("a1.size = %d b1.size = %d ",a.size,b.size);
 		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
+		bool resPos=true;
+		
+		if((a1.isNegative==true && b1.isNegative==false) ||
+		   (a1.isNegative==false && b1.isNegative==true)){
+				resPos = false;
+				a1.isNegative=false;
+				b1.isNegative=false;
+		}
 
 		Array A = substrl(a1);
 		//printf("A : ");printArray(A);
@@ -345,19 +354,23 @@ Array karatsuba(Array a1,Array b1){
 		//printf("P : ");printArray(P);
 		Array BD = karatsuba(B,D);
 		//printf("BD : ");printArray(BD);
-	
-
-		Array ac = aggrandissement(AC,2*s);
-		Array r1 = sumArrays(AC,BD);
-		Array r2 = subArrays(r1,P);
-		Array z = aggrandissement(r2,s);
-		Array r3 = sumArrays(ac,z);
-		result = sumArrays(r3,BD);
-
+		
 		freeArray(&A);
 		freeArray(&B);
 		freeArray(&C);
 		freeArray(&D);
+		
+		//printf("AC : &&");printArray(ac);
+		Array ac = aggrandissement(AC,2*s);
+		//printf("ac : &&");printArray(ac);
+		Array r1 = sumArrays(AC,BD);
+		Array r2 = subArrays(r1,P);
+		//printf("r2 : &&");printArray(r2);
+		Array z = aggrandissement(r2,s);
+		//printf("z : &&&");printArray(z);
+		Array r3 = sumArrays(ac,z);
+		result = sumArrays(r3,BD);
+
 		freeArray(&AC);
 		freeArray(&P);
 		freeArray(&BD);
@@ -366,6 +379,11 @@ Array karatsuba(Array a1,Array b1){
 		freeArray(&r2);
 		freeArray(&z);
 		freeArray(&r3);
+		//printf("res : ");printArray(result);
+		
+		if(resPos == false)
+			result.isNegative=true;
+		
 		return result;
 		
 	}
