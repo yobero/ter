@@ -57,7 +57,7 @@ int main(int argc, char ** argv)
 				Array x;
 				Array y;
 				Array z;
-				for(int i=1;i<10000;i+=10){
+				for(int i=1;i<10010;i+=1000){
 				//for(int i=1;i<35;i+=1){
 					char* s1 = calloc(i,sizeof(int));
 					char* s2 = calloc(i,sizeof(int));
