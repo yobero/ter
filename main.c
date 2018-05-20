@@ -53,7 +53,11 @@ int main(int argc, char ** argv)
 			case 3 :{
 				//i montre le nombre de chiffre
 				int val;
-				for(int i=1;i<100000;i+=1){
+				int* res;
+				Array x;
+				Array y;
+				Array z;
+				for(int i=1;i<1000000;i+=100000){
 					char* s1 = calloc(i,sizeof(int));
 					char* s2 = calloc(i,sizeof(int));
 					//creation aleatoire d'un nombre de i chiffre
@@ -65,22 +69,23 @@ int main(int argc, char ** argv)
 					}
 					//algo naif
 					size_t sizeRes = strlen(s1) + strlen(s2);
-					int * res = calloc(sizeRes + 1, sizeof(int)); //calloc <=> malloc + initialisation du tableau à 0
+					res = calloc(sizeRes + 1, sizeof(int)); //calloc <=> malloc + initialisation du tableau à 0
 					debut = clock();
 					naiveMultiply(s1, s2, res);
 					double naive = ((double)clock()-debut)/CLOCKS_PER_SEC;
+					free(res);
 
-					Array x = initArrayInt(s1);
-					Array y = initArrayInt(s2);
+					x = initArrayInt(s1);
+					y = initArrayInt(s2);
 					debut = clock();
-					//Array z = karatsuba(x,y);
+					z = karatsuba(x,y);
 					double karat = ((double)clock()-debut)/CLOCKS_PER_SEC;
 
 					printf("%d %f %f\n",i,naive,karat);
 	
 					freeArray(&x);
 					freeArray(&y);
-					//freeArray(&z);
+					freeArray(&z);
 					
 					free(s1);
 					free(s2);

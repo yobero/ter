@@ -23,12 +23,13 @@ Array init(size_t nbElement){
 Array reduction(Array a){
 	if(a.size>1){
 		Array result;
+		//compteur contient le nombre de 0 dans le tableau
 		int compteur=0;
 		for(int i=0;i<a.size;i++){
 			if(a.array[i]!=0) break;
 			else compteur++;
 		}
-		if(compteur==a.size){ Array zero = init(1);return zero; }
+		if(compteur==a.size){ Array zero = init(1); return zero; }
 		result=init(a.size-compteur);
 		int j=0;
 		for(int i=compteur;i<a.size;i++){
@@ -129,7 +130,7 @@ Array ajustArraySize(Array a1, Array b1) {
     freeArray(&tmp);
     return a;
   }else {
-	return a;
+	return copy(a);
   }
 }
 
@@ -156,7 +157,7 @@ int biggest(Array a, Array b){
 
 }
 
-int whoIsTheBiggest(Array a1, Array b1){
+/*int whoIsTheBiggest(Array a1, Array b1){
 	Array a = ajustArraySize(a1,b1);
 	Array b = ajustArraySize(b1,a1);
 
@@ -177,7 +178,7 @@ int whoIsTheBiggest(Array a1, Array b1){
 	}
 
 	return 22; // return par défaut
-}
+}*/
 
 Array sumArrays(Array a, Array b){
 	Array a1 = ajustArraySize(a,b);
@@ -316,38 +317,44 @@ Array karatsuba(Array a1,Array b1){
 	//
 	//dans le cas contraire
 	if(a1.size>1 && b1.size>1){
-		// AJUSTEMENT DE LA TAIL123456789123456789123LE DES TABLEAUX
-			//Tester la paritée de la taille des nombres
-		 //Array a = reduction(a1);
-		 //Array b = reduction(b1);
-		//Array a =  ajustArraySize(a1,b1);
-		//Array b =  ajustArraySize(b1,a1);
-		//printf("a1.size = %d b1.size = %d ",a.size,b.size);
+		// AJUSTEMENT DE LA TAILLE DES TABLEAUX
+		Array a =  ajustArraySize(a1,b1);
+		Array b =  ajustArraySize(b1,a1);
+		//printf("a1.size = %d b1.size = %d\n",a1.size,b1.size);
+		//printf("a.size = %d b.size = %d\n",a.size,b.size);
 		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
 		bool resPos=true;
 		
 		//Si un des tableaux est négatif alors le resultat est forcement négatif
 		//la variable resPos indique si le resultat est négatif (false) ou positif (true)
-		if((a1.isNegative==true && b1.isNegative==false) ||
-		   (a1.isNegative==false && b1.isNegative==true)){
+		if((a.isNegative==true && b.isNegative==false) ||
+		   (a.isNegative==false && b.isNegative==true)){
 				resPos = false;
-				a1.isNegative=false;
-				b1.isNegative=false;
+				a.isNegative=false;
+				b.isNegative=false;
 		}
 
-		Array A = substrl(a1);
+		Array A = substrl(a);
 		//printf("A : ");printArray(A);
-		Array B = substrr(a1);
+		Array B = substrr(a);
 		//printf("B : ");printArray(B);
-		Array C = substrl(b1);
+		Array C = substrl(b);
 		//printf("C : ");printArray(C);
-		Array D = substrr(b1);
+		Array D = substrr(b);
 		//printf("D : ");printArray(D);
+		
+		freeArray(&a); freeArray(&b);
 		
 		Array AC = karatsuba(A,C);
 		//printf("AC : ");printArray(AC);
 		Array q = subArrays(A,B);
 		Array w = subArrays(C,D);
+		
+		freeArray(&A);
+		freeArray(&B);
+		freeArray(&C);
+		freeArray(&D);
+		
 		//printf("a-b : ");printArray(q);
 		//printf("c-d : ");printArray(w);
 		Array P = karatsuba(q,w);
@@ -356,11 +363,6 @@ Array karatsuba(Array a1,Array b1){
 		//printf("P : ");printArray(P);
 		Array BD = karatsuba(B,D);
 		//printf("BD : ");printArray(BD);
-		
-		freeArray(&A);
-		freeArray(&B);
-		freeArray(&C);
-		freeArray(&D);
 		
 		//printf("AC : &&");printArray(ac);
 		Array ac = aggrandissement(AC,2*s);
