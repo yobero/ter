@@ -5,7 +5,6 @@
 
 typedef struct {
 	int *array;
-	//size_t used;
 	size_t size;
 	bool isNegative;
 } Array;
@@ -13,9 +12,22 @@ typedef struct {
 Array init(size_t nbElement){
 	Array a;
 	a.array = calloc(nbElement,sizeof(int));
+	if(a.array==NULL){
+		printf("Erreur lors de l'initialisation dans init()\n");
+		exit(1);
+	}
 	a.size = nbElement;
 	a.isNegative = false;
 	return a;
+}
+
+Array copy(Array a) {
+  Array copiedArray = init(a.size);
+	copiedArray.isNegative = a.isNegative;
+  for(int i=0; i<a.size; i++){
+      copiedArray.array[i] = a.array[i];
+  }
+  return copiedArray;
 }
 
 Array reduction(Array a){
@@ -27,8 +39,10 @@ Array reduction(Array a){
 			if(a.array[i]!=0) break;
 			else compteur++;
 		}
-		if(compteur==a.size){ Array zero = init(1); return zero; }
+		if(compteur>=a.size){ Array zero = init(1); return zero; }
+		//printf("A reduction\n");
 		result=init(a.size-compteur);
+		//printf("B reduction\n");
 		int j=0;
 		for(int i=compteur;i<a.size;i++){
 			result.array[j]=a.array[i];
@@ -37,7 +51,7 @@ Array reduction(Array a){
 		result.isNegative=a.isNegative;
 		return result;
 	}
-	return a;
+	return copy(a);
 }
 
 Array opposer(Array a){
@@ -93,29 +107,23 @@ Array initArrayInt(char *str){
 	return a;
 }
 
-Array copy(Array a) {
-  Array copiedArray = init(a.size);
-	copiedArray.isNegative = a.isNegative;
-  for(int i=0; i<a.size; i++){
-      copiedArray.array[i] = a.array[i];
-  }
-  return copiedArray;
-}
-
-Array ajustArraySize(Array a1, Array b1) {
+Array ajustArraySize(Array a, Array b) {
 
   // 1) on garde en mémoire le tableau a dans tmp
   // 2) on remet à 0 le tableau a, avec la taille de b
   // 3) on recopie depuis la fin le tableau tmp dans a
   // 4) on désalloue la mémoire de tmp
   // 5) on retourne a modifié avec du padding à 0 à l'avant du tableau
-	Array a = reduction(a1);
+	//printf("I a1.size = %d et b1.size = %d\n",a1.size,b1.size);
+	/*Array a = reduction(a1);
 	Array b = reduction(b1);
+	//printf("I a.size = %d et b.size = %d\n",a.size,b.size);
 
   if(a.size < b.size) {
     Array tmp = copy(a);
-    a.size = b.size;
-		initArrayToZero(&a, a.size);
+	  freeArray(&a);
+	  	initArrayToZero(&a, b.size);
+   		a.size = b.size;
 		size_t saveBsize = b.size;
 
     for(int i=tmp.size - 1; i>=0; i--, b.size--) {
@@ -123,15 +131,28 @@ Array ajustArraySize(Array a1, Array b1) {
     }
 		b.size = saveBsize;
 		a.isNegative = tmp.isNegative;
-    freeArray(&tmp);
+   		freeArray(&tmp);
     return a;
   }else {
-	return a;
-  }
+	return copy(a);
+  }*/
+	if(a.size<b.size){
+		int ecart = b.size-a.size;
+		Array result = init(b.size);
+		for(int i=0;i<a.size;i++){
+			result.array[i+ecart]=a.array[i];
+		}
+		result.isNegative=a.isNegative;
+		return result;
+	}
+	else return copy(a);
 }
 
 Array aggrandissement(Array a,size_t adroite){
+	//printf("A reduction\n");
+	//printf("taille de a : %d valeur de droite : %d\n",a.size,adroite);
 	Array result = init(a.size+adroite);
+	//printf("B reduction\n");
 	//simple copie du tableau a
 	for(int i=0;i<a.size;i++){
 		result.array[i]=a.array[i];
@@ -155,6 +176,7 @@ int biggest(Array a, Array b){
 Array sumArrays(Array a, Array b){
 	Array a1 = ajustArraySize(a,b);
 	Array b1 = ajustArraySize(b,a);
+	//printf("taille de a1 : %d taille de b1 = %d\n",a1.size,b1.size);
 	Array result = init(a1.size+1);
 
 	if (a.isNegative==false && b.isNegative==false)
@@ -198,7 +220,17 @@ Array sumArrays(Array a, Array b){
 	}
 
 	if (a.isNegative==true && b.isNegative==true){
-		return opposer(sumArrays(opposer(a),opposer(b)));
+		Array opA = opposer(a);
+		Array opB = opposer(b);
+		Array sum = sumArrays(opA,opB);
+		
+		Array opSum = opposer(sum);
+		
+		freeArray(&opA);
+		freeArray(&opB);
+		freeArray(&sum);
+		
+		return opSum;
 	}
 
 
@@ -233,64 +265,68 @@ Array substrl(Array t)
 //Prend la partie droite du tableau t
 Array substrr(Array t)
 {
-	Array tab = init(t.size-substrl(t).size);
+	int taille = t.size-t.size/2;
+	//Array tab = init(t.size-substrl(t).size);
+	Array tab = init(taille);
 	int j=0;
-	for (int i=0;i<t.size-substrl(t).size;i++){
-		tab.array[j] = t.array[i+substrl(t).size];
+	for (int i=0;i<taille;i++){
+		tab.array[j] = t.array[i+t.size/2];
 		j++;
 	}
 	tab.isNegative=false;
   return tab;
 }
 
-Array taillePaire(Array a){
-	//taille impaire
-	if(a.size%2==1){
-		Array result = init(a.size+1);
-		for(int i=1;i<a.size+1;i++){
-			result.array[i]=a.array[i-1];
-		}
-		return result;
-	}
-	return a;
-}
-
 Array karatsuba(Array a1,Array b1){
 	//Cas ou la taille de a ou b = 1
-	Array result = init(a1.size+b1.size);
+	Array result;
 	
 	if(a1.size==1 || b1.size==1){
+		result = init(1);
 		if (a1.size==1)
 		{
 			int val = a1.array[0];
+			//printf("taille de b1 : %d\n",b1.size);
+			//printf("taille de a1 : %d valeur de a[0] = %d\n",a1.size,a1.array[0]);
+			//printArray(b1);
 			for (int i = 0; i < val; ++i)
 			{
-				result = sumArrays(result,b1);
+				//printf("val = %d i= %d taille de result = %d\n",val,i,result.size);
+				Array tmp = copy(result);
+				freeArray(&result);
+				result = sumArrays(tmp,b1);
+				freeArray(&tmp);
 			}
-		result.isNegative=(a1.isNegative==b1.isNegative)?(false):(true);
-		result = reduction(result);
-		return result;
+			//printf("resultat : ");printArray(result);
+			result.isNegative=(a1.isNegative==b1.isNegative)?(false):(true);
+			result = reduction(result);
+			//printf("taille de result : %d\n",result.size);
+			return result;
 		}
-
-		if (b1.size==1)
-		{
-			int val = b1.array[0];
-			for (int i = 0; i < val; ++i)
+		else{
+			if (b1.size==1)
 			{
-				result = sumArrays(result,a1);
+				int val = b1.array[0];
+				for (int i = 0; i < val; ++i)
+				{
+					Array tmp = copy(result);
+					freeArray(&result);
+					result = sumArrays(result,a1);
+					freeArray(&tmp);
+				}
+			result.isNegative=(a1.isNegative==b1.isNegative)?(false):(true);
+			result = reduction(result);
+			return result;
 			}
-		result.isNegative=(a1.isNegative==b1.isNegative)?(false):(true);
-		result = reduction(result);
-		return result;
 		}
-
-		
 	}
 
 	//
 	//dans le cas contraire
 	if(a1.size>1 && b1.size>1){
+		//result = init(a1.size+b1.size);
 		// AJUSTEMENT DE LA TAILLE DES TABLEAUX
+		//printf("O a1.size = %d b1.size = %d\n",a1.size,b1.size);
 		Array a =  ajustArraySize(a1,b1);
 		Array b =  ajustArraySize(b1,a1);
 		size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
@@ -312,6 +348,7 @@ Array karatsuba(Array a1,Array b1){
 		
 		freeArray(&a); freeArray(&b);
 		
+		
 		Array AC = karatsuba(A,C);
 		Array q = subArrays(A,B);
 		Array w = subArrays(C,D);
@@ -331,7 +368,7 @@ Array karatsuba(Array a1,Array b1){
 		Array z = aggrandissement(r2,s);
 		Array r3 = sumArrays(ac,z);
 		result = sumArrays(r3,BD);
-
+		
 		freeArray(&AC);
 		freeArray(&P);
 		freeArray(&BD);
