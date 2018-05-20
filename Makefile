@@ -11,7 +11,7 @@ compile : main.c karatsuba.c
 	gcc -Wall main.c -o multi -lm
 	
 run : compile
-	./multi 974657 328982 0
+	./multi 12345678987654321123456789098765433 12345678987654321123456789098765433 0
 	
 naive : compile
 	./multi 12 12 1

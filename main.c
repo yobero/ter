@@ -57,7 +57,8 @@ int main(int argc, char ** argv)
 				Array x;
 				Array y;
 				Array z;
-				for(int i=1;i<1000000;i+=100000){
+				for(int i=1;i<100000;i+=10000){
+				//for(int i=1;i<35;i+=1){
 					char* s1 = calloc(i,sizeof(int));
 					char* s2 = calloc(i,sizeof(int));
 					//creation aleatoire d'un nombre de i chiffre
