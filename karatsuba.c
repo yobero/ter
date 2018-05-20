@@ -260,10 +260,12 @@ Array substrl(Array t)
 
 Array substrr(Array t)
 {
-	Array tab = init(t.size-substrl(t).size);
+	int taille = t.size-t.size/2;
+	//Array tab = init(t.size-substrl(t).size);
+	Array tab = init(taille);
 	int j=0;
-	for (int i=0;i<t.size-substrl(t).size;i++){
-		tab.array[j] = t.array[i+substrl(t).size];
+	for (int i=0;i<taille;i++){
+		tab.array[j] = t.array[i+t.size/2];
 		j++;
 	}
 	tab.isNegative=false;
