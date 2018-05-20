@@ -57,7 +57,7 @@ int main(int argc, char ** argv)
 				Array x;
 				Array y;
 				Array z;
-				for(int i=1;i<100000;i+=10000){
+				for(int i=1;i<10000;i+=10){
 				//for(int i=1;i<35;i+=1){
 					char* s1 = calloc(i,sizeof(int));
 					char* s2 = calloc(i,sizeof(int));
@@ -78,6 +78,8 @@ int main(int argc, char ** argv)
 
 					x = initArrayInt(s1);
 					y = initArrayInt(s2);
+					free(s1);
+					free(s2);
 					debut = clock();
 					z = karatsuba(x,y);
 					double karat = ((double)clock()-debut)/CLOCKS_PER_SEC;
@@ -88,8 +90,6 @@ int main(int argc, char ** argv)
 					freeArray(&y);
 					freeArray(&z);
 					
-					free(s1);
-					free(s2);
 					s1=NULL;
 					s2=NULL;
 				}

@@ -73,7 +73,6 @@ void initArrayToZero(Array *a, size_t initialSize) {
 void freeArray(Array *a) {
 	free(a->array);
 	a->array = NULL;
-	//a->used = 0;
 	a->size = 0;
 }
 
@@ -371,6 +370,11 @@ Array karatsuba(Array a1,Array b1){
 		Array BD = karatsuba(B,D);
 		//printf("BD : ");printArray(BD);
 		
+		freeArray(&A);
+		freeArray(&B);
+		freeArray(&C);
+		freeArray(&D);
+		
 		//printf("AC : &&");printArray(ac);
 		//printf("C\n");
 		//printf("a1 :\n");printArray(a1);
@@ -390,10 +394,6 @@ Array karatsuba(Array a1,Array b1){
 		Array r3 = sumArrays(ac,z);
 		result = sumArrays(r3,BD);
 		
-		freeArray(&A);
-		freeArray(&B);
-		freeArray(&C);
-		freeArray(&D);
 		freeArray(&AC);
 		freeArray(&P);
 		freeArray(&BD);
