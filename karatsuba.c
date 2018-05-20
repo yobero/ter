@@ -130,7 +130,7 @@ Array ajustArraySize(Array a1, Array b1) {
     freeArray(&tmp);
     return a;
   }else {
-	return copy(a);
+	return a;
   }
 }
 
@@ -350,11 +350,6 @@ Array karatsuba(Array a1,Array b1){
 		Array q = subArrays(A,B);
 		Array w = subArrays(C,D);
 		
-		freeArray(&A);
-		freeArray(&B);
-		freeArray(&C);
-		freeArray(&D);
-		
 		//printf("a-b : ");printArray(q);
 		//printf("c-d : ");printArray(w);
 		Array P = karatsuba(q,w);
@@ -363,6 +358,11 @@ Array karatsuba(Array a1,Array b1){
 		//printf("P : ");printArray(P);
 		Array BD = karatsuba(B,D);
 		//printf("BD : ");printArray(BD);
+		
+		freeArray(&A);
+		freeArray(&B);
+		freeArray(&C);
+		freeArray(&D);
 		
 		//printf("AC : &&");printArray(ac);
 		Array ac = aggrandissement(AC,2*s);
