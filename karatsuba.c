@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-//typedef enum bool{TRUE, FALSE}
-
 typedef struct {
 	int *array;
 	//size_t used;
@@ -49,8 +47,7 @@ Array opposer(Array a){
 }
 
 void initArrayToZero(Array *a, size_t initialSize) {
-  a->array = (int *)calloc(initialSize, sizeof(int));
-  //->used = 0;
+  	a->array = (int *)calloc(initialSize, sizeof(int));
 	a->size = initialSize;
 	a->isNegative = false;
 }
@@ -59,7 +56,6 @@ void initArrayToZero(Array *a, size_t initialSize) {
 void freeArray(Array *a) {
 	free(a->array);
 	a->array = NULL;
-	//a->used = 0;
 	a->size = 0;
 }
 
@@ -137,7 +133,6 @@ Array ajustArraySize(Array a1, Array b1) {
 Array aggrandissement(Array a,size_t adroite){
 	Array result = init(a.size+adroite);
 	//simple copie du tableau a
-	//result.isNegative=a.isNegative;
 	for(int i=0;i<a.size;i++){
 		result.array[i]=a.array[i];
 	}
@@ -156,29 +151,6 @@ int biggest(Array a, Array b){
 	return 0; // a = b
 
 }
-
-/*int whoIsTheBiggest(Array a1, Array b1){
-	Array a = ajustArraySize(a1,b1);
-	Array b = ajustArraySize(b1,a1);
-
-	if(a.isNegative == false && b.isNegative == false){
-		return biggest(a,b);
-	}
-
-	if(a.isNegative == true && b.isNegative == false){
-		return -1; // a < b
-	}
-
-	if(a.isNegative == false && b.isNegative == true) {
-		return 1; // a > b
-	}
-
-	if(a.isNegative == true  && b.isNegative == true) {
-		return biggest(a,b);
-	}
-
-	return 22; // return par défaut
-}*/
 
 Array sumArrays(Array a, Array b){
 	Array a1 = ajustArraySize(a,b);
@@ -242,10 +214,10 @@ Array sumArrays(Array a, Array b){
 }
 
 Array subArrays(Array a, Array b){
-		
-		return sumArrays(a,opposer(b));
+	return sumArrays(a,opposer(b));
 }
 
+//Prend la partie gauche du tableau t
 Array substrl(Array t)
 {
 	Array tab = init(t.size/2);
@@ -258,6 +230,7 @@ Array substrl(Array t)
   return tab;
 }
 
+//Prend la partie droite du tableau t
 Array substrr(Array t)
 {
 	Array tab = init(t.size-substrl(t).size);
@@ -320,9 +293,7 @@ Array karatsuba(Array a1,Array b1){
 		// AJUSTEMENT DE LA TAILLE DES TABLEAUX
 		Array a =  ajustArraySize(a1,b1);
 		Array b =  ajustArraySize(b1,a1);
-		//printf("a1.size = %d b1.size = %d\n",a1.size,b1.size);
-		//printf("a.size = %d b.size = %d\n",a.size,b.size);
-		 size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
+		size_t s = (a1.size%2==0)?(a1.size/2):((a1.size/2)+(a1.size%2));
 		bool resPos=true;
 		
 		//Si un des tableaux est négatif alors le resultat est forcement négatif
@@ -335,43 +306,29 @@ Array karatsuba(Array a1,Array b1){
 		}
 
 		Array A = substrl(a);
-		//printf("A : ");printArray(A);
 		Array B = substrr(a);
-		//printf("B : ");printArray(B);
 		Array C = substrl(b);
-		//printf("C : ");printArray(C);
 		Array D = substrr(b);
-		//printf("D : ");printArray(D);
 		
 		freeArray(&a); freeArray(&b);
 		
 		Array AC = karatsuba(A,C);
-		//printf("AC : ");printArray(AC);
 		Array q = subArrays(A,B);
 		Array w = subArrays(C,D);
-		
-		//printf("a-b : ");printArray(q);
-		//printf("c-d : ");printArray(w);
 		Array P = karatsuba(q,w);
 		freeArray(&q);
 		freeArray(&w);
-		//printf("P : ");printArray(P);
 		Array BD = karatsuba(B,D);
-		//printf("BD : ");printArray(BD);
 		
 		freeArray(&A);
 		freeArray(&B);
 		freeArray(&C);
 		freeArray(&D);
 		
-		//printf("AC : &&");printArray(ac);
 		Array ac = aggrandissement(AC,2*s);
-		//printf("ac : &&");printArray(ac);
 		Array r1 = sumArrays(AC,BD);
 		Array r2 = subArrays(r1,P);
-		//printf("r2 : &&");printArray(r2);
 		Array z = aggrandissement(r2,s);
-		//printf("z : &&&");printArray(z);
 		Array r3 = sumArrays(ac,z);
 		result = sumArrays(r3,BD);
 
@@ -383,8 +340,8 @@ Array karatsuba(Array a1,Array b1){
 		freeArray(&r2);
 		freeArray(&z);
 		freeArray(&r3);
-		//printf("res : ");printArray(result);
 		
+		//Si resPos est faux alors le resultat est négatif
 		if(resPos == false)
 			result.isNegative=true;
 		
