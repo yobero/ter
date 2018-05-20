@@ -1,6 +1,6 @@
 g = read.table("result")
 jpeg("plot.jpg")
-plot(g$V1, g$V2, type = "n", ylim = range(c(g$V2, g$V3)), xlab = "", ylab = "")
+plot(g$V1, g$V2, type = "n", ylim = range(c(g$V2, g$V3)), xlab = "Nombre de chiffre", ylab = "temps d'execution", main="Temps d'execution en fonction du nombre de chiffres")
 lines(g$V1, g$V2, col = "blue")
 lines(g$V1, g$V3, col = "red")
 dev.off()
